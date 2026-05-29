@@ -11,7 +11,9 @@ class ProfileService {
       'name': name,
       'email': email,
       'bio': '',
-      'photoUrl': '',
+      'cnum': '',
+      'gender': '',
+      'bday': '',
     });
   }
 

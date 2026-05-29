@@ -4,9 +4,11 @@ import '../../models/userprofile.dart';
 import '../../services/auth_service.dart';
 import '../../services/profile_service.dart';
 import 'editprofile_screen.dart';
+import '../search/search_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final String? uid;
+  const ProfileScreen({super.key, this.uid});
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
@@ -39,8 +41,8 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   Future<void> _load() async {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    final p   = await ProfileService().getProfile(uid);
+    final uid = widget.uid ?? FirebaseAuth.instance.currentUser!.uid;
+    final p = await ProfileService().getProfile(uid);
     setState(() => _profile = p);
     _animController.forward();
   }
@@ -49,6 +51,51 @@ class _ProfileScreenState extends State<ProfileScreen>
   void dispose() {
     _animController.dispose();
     super.dispose();
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Log Out',
+          style: TextStyle(
+            fontFamily: 'Georgia',
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF3D1A2E),
+          ),
+        ),
+        content: const Text(
+          'Are you sure you want to log out of your account?',
+          style: TextStyle(fontSize: 14, color: Colors.grey),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Colors.grey),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await AuthService().logout();
+            },
+            child: const Text(
+              'Log Out',
+              style: TextStyle(
+                color: kPinkDark,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
 
@@ -98,24 +145,47 @@ class _ProfileScreenState extends State<ProfileScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'My Profile',
-                style: TextStyle(
-                  fontFamily: 'Georgia',
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: kWhite,
-                  letterSpacing: 0.5,
+              // show back button when viewing others, title when own profile
+              if (widget.uid != null)
+                _iconBtn(
+                  icon: Icons.arrow_back_ios_new_rounded,
+                  onTap: () => Navigator.pop(context),
+                  tooltip: 'Back',
+                )
+              else
+                const Text(
+                  'My Profile',
+                  style: TextStyle(
+                    fontFamily: 'Georgia',
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: kWhite,
+                    letterSpacing: 0.5,
+                  ),
                 ),
-              ),
-              _iconBtn(
-                icon: Icons.logout_rounded,
-                onTap: () => AuthService().logout(),
-                tooltip: 'Logout',
-              ),
+
+              // show search + logout only on own profile
+              if (widget.uid == null)
+                Row(
+                  children: [
+                    _iconBtn(
+                      icon: Icons.search_rounded,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const SearchScreen()),
+                      ),
+                      tooltip: 'Search Users',
+                    ),
+                    const SizedBox(width: 8),
+                    _iconBtn(
+                      icon: Icons.logout_rounded,
+                      onTap: () => _showLogoutDialog(context), // changed this
+                      tooltip: 'Logout',
+                    ),
+                  ],
+                ),
             ],
           ),
-
           const SizedBox(height: 28),
 
           // Avatar
@@ -184,7 +254,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  // ── White card section ────────────────────────────────────
+  //card section
   Widget _buildCard() {
     return Container(
       width: double.infinity,
@@ -234,7 +304,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             ),
             child: Text(
               _profile!.bio.isEmpty
-                  ? 'No bio yet. Tap Edit Profile to add one ✨'
+                  ? 'No bio yet. Tap Edit Profile to add one '
                   : _profile!.bio,
               style: TextStyle(
                 fontSize: 15,
@@ -255,42 +325,48 @@ class _ProfileScreenState extends State<ProfileScreen>
               _profile!.name.isEmpty ? '—' : _profile!.name),
           const SizedBox(height: 10),
           _infoTile(Icons.mail_outline_rounded, 'Email', _profile!.email),
-
+          const SizedBox(height: 10),
+          _infoTile(Icons.phone_android_outlined, 'Contact number', _profile!.cnum),
+          const SizedBox(height: 10),
+          _infoTile(Icons.person_outline_rounded, 'Gender', _profile!.gender),
+          const SizedBox(height: 10),
+          _infoTile(Icons.date_range, 'Birthday', _profile!.bday),
           const SizedBox(height: 36),
 
           // Edit button
-          SizedBox(
-            width: double.infinity,
-            height: 54,
-            child: ElevatedButton.icon(
-              onPressed: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => EditProfileScreen(profile: _profile!),
+          if (widget.uid == null)
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EditProfileScreen(profile: _profile!),
+                    ),
+                  );
+                  _profile = null;
+                  setState(() {});
+                  _animController.reset();
+                  _load();
+                },
+                icon: const Icon(Icons.edit_rounded, size: 20),
+                label: const Text(
+                  'Edit Profile',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kPinkDark,
+                  foregroundColor: kWhite,
+                  elevation: 4,
+                  shadowColor: kPinkDark.withOpacity(0.4),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                );
-                _profile = null;
-                setState(() {});
-                _animController.reset();
-                _load();
-              },
-              icon: const Icon(Icons.edit_rounded, size: 20),
-              label: const Text(
-                'Edit Profile',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: kPinkDark,
-                foregroundColor: kWhite,
-                elevation: 4,
-                shadowColor: kPinkDark.withOpacity(0.4),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );

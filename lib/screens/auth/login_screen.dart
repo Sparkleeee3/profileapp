@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import 'signup_screen.dart';
+import 'forgotpass_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -26,6 +27,7 @@ class _LoginScreenState extends State<LoginScreen>
   static const kCream      = Color(0xFFF2FFF4);
   static const cblack      = Colors.black;
   static const fg          = Color(0xFfF6FFDC);
+
 
   @override
   void initState() {
@@ -111,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen>
               radius: 42,
               backgroundColor: kGreenDeep,
               child: const Icon(
-                Icons.eco_rounded,
+                Icons.account_circle,
                 size: 40,
                 color: cblack,
               ),
@@ -121,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen>
           const SizedBox(height: 20),
 
           const Text(
-            'Welcome Back',
+            'Jeneroso Profile App',
             style: TextStyle(
               fontFamily: 'Georgia',
               fontSize: 28,
@@ -212,6 +214,25 @@ class _LoginScreenState extends State<LoginScreen>
               ),
             ),
 
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ForgotPasswordScreen(),
+                  ),
+                ),
+                child: const Text(
+                  'Forgot Password?',
+                  style: TextStyle(
+                    color: kGreenDark,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ),
             const SizedBox(height: 36),
 
             // Login button
@@ -285,7 +306,7 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  // ── Reusable widgets ──────────────────────────────────────
+  // Reusabl widgets
   Widget _sectionLabel(String text) {
     return Text(
       text,

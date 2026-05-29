@@ -110,7 +110,8 @@ class _SignupScreenState extends State<SignupScreen>
               radius: 42,
               backgroundColor: kGreenDeep,
               child: const Icon(
-                Icons.eco_rounded,
+                Icons.account_circle,
+
                 size: 40,
                 color: cblack,
               ),
