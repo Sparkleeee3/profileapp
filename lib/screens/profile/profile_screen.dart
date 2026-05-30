@@ -5,6 +5,7 @@ import '../../services/auth_service.dart';
 import '../../services/profile_service.dart';
 import 'editprofile_screen.dart';
 import '../search/search_screen.dart';
+import 'accsett_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String? uid;
@@ -145,7 +146,6 @@ class _ProfileScreenState extends State<ProfileScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // show back button when viewing others, title when own profile
               if (widget.uid != null)
                 _iconBtn(
                   icon: Icons.arrow_back_ios_new_rounded,
@@ -168,6 +168,24 @@ class _ProfileScreenState extends State<ProfileScreen>
               if (widget.uid == null)
                 Row(
                   children: [
+                    _iconBtn(
+                      icon: Icons.settings_rounded,
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => AccountSettingsScreen(profile: _profile!),
+                          ),
+                        );
+
+                        _profile = null;
+                        setState(() {});
+                        _animController.reset();
+                        _load();
+                      },
+                      tooltip: 'Account Settings',
+                    ),
+                    const SizedBox(width: 8),
                     _iconBtn(
                       icon: Icons.search_rounded,
                       onTap: () => Navigator.push(
@@ -324,14 +342,18 @@ class _ProfileScreenState extends State<ProfileScreen>
           _infoTile(Icons.person_outline_rounded, 'Name',
               _profile!.name.isEmpty ? '—' : _profile!.name),
           const SizedBox(height: 10),
-          _infoTile(Icons.mail_outline_rounded, 'Email', _profile!.email),
-          const SizedBox(height: 10),
-          _infoTile(Icons.phone_android_outlined, 'Contact number', _profile!.cnum),
-          const SizedBox(height: 10),
-          _infoTile(Icons.person_outline_rounded, 'Gender', _profile!.gender),
-          const SizedBox(height: 10),
-          _infoTile(Icons.date_range, 'Birthday', _profile!.bday),
-          const SizedBox(height: 36),
+          _infoTile(Icons.mail_outline_rounded, 'Email',
+              widget.uid != null && _profile!.privateEmail
+                  ? '🔒 Private' : _profile!.email.isEmpty ? '—' : _profile!.email),
+          _infoTile(Icons.phone_android_outlined, 'Contact number',
+              widget.uid != null && _profile!.privateCnum
+                  ? '🔒 Private' : _profile!.cnum.isEmpty ? '—' : _profile!.cnum),
+          _infoTile(Icons.person_outline_rounded, 'Gender',
+              widget.uid != null && _profile!.privateGender
+                  ? '🔒 Private' : _profile!.gender.isEmpty ? '—' : _profile!.gender),
+          _infoTile(Icons.date_range, 'Birthday',
+              widget.uid != null && _profile!.privateBday
+                  ? '🔒 Private' : _profile!.bday.isEmpty ? '—' : _profile!.bday),
 
           // Edit button
           if (widget.uid == null)

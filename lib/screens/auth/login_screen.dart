@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import 'signup_screen.dart';
 import 'forgotpass_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -55,15 +56,39 @@ class _LoginScreenState extends State<LoginScreen>
     try {
       await AuthService().login(_email.text.trim(), _pass.text.trim());
     } catch (e) {
-      if (mounted)
+      if (mounted) {
+        String message;
+        if (e is FirebaseAuthException) {
+          switch (e.code) {
+            case 'wrong-password':
+            case 'invalid-credential':
+              message = 'Incorrect email or password';
+              break;
+            case 'user-not-found':
+              message = 'No account found with that email';
+              break;
+            case 'invalid-email':
+              message = 'Please enter a valid email';
+              break;
+            case 'user-disabled':
+              message = 'This account has been disabled';
+              break;
+            default:
+              message = 'Incorrect email or password';
+          }
+        } else {
+          message = 'Incorrect email or password';
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('$e'),
+            content: Text(message),  // 👈 no longer '$e'
             backgroundColor: kGreenDark,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12)),
           ),
         );
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
