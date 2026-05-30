@@ -236,7 +236,7 @@
           ),
         ),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(28, 32, 28, 40),
+          padding: const EdgeInsets.fromLTRB(28, 28, 28, 36),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -250,46 +250,47 @@
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-
-
               const SizedBox(height: 24),
 
               // Bio
               _sectionLabel('About Me'),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               _styledField(
                 controller: _bio,
                 icon: Icons.edit_note_rounded,
-                hint: 'Write something about yourself ',
+                hint: 'Write something about yourself',
                 maxLines: 3,
               ),
-              const SizedBox(height: 24),
-              // Name field
+              const SizedBox(height: 16),
+
+              // Name
               _sectionLabel('Name'),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               _styledField(
                 controller: _name,
                 icon: Icons.person_outline_rounded,
                 hint: 'Your full name',
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
-              //contactnum
-            _sectionLabel('Contact Number'), const SizedBox(height: 5),
-            _styledField(
-              controller: _cnum,
-              icon: Icons.phone_android_outlined,
-              hint: 'Your contact number',
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(11),],
-            ),
+              // Contact Number
+              _sectionLabel('Contact Number'),
+              const SizedBox(height: 8),
+              _styledField(
+                controller: _cnum,
+                icon: Icons.phone_android_outlined,
+                hint: 'Your contact number',
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(11),
+                ],
+              ),
+              const SizedBox(height: 16),
 
-              const SizedBox(height: 24),
-
-              //Gender
-              _sectionLabel('Gender'), const SizedBox(height: 5),
+              // Gender
+              _sectionLabel('Gender'),
+              const SizedBox(height: 8),
               Container(
                 decoration: BoxDecoration(
                   color: kWhite,
@@ -303,12 +304,14 @@
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Row(
                   children: ['Male', 'Female'].map((g) {
                     return Expanded(
                       child: RadioListTile<String>(
-                        title: Text(g, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                        title: Text(g,
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w500)),
                         value: g,
                         groupValue: _selectedGender,
                         activeColor: kPinkDark,
@@ -319,40 +322,37 @@
                   }).toList(),
                 ),
               ),
+              const SizedBox(height: 16),
 
-              const SizedBox(height: 24),
-              //bday
-              _sectionLabel('Birthday'), const SizedBox(height: 5),
+              // Birthday
+              _sectionLabel('Birthday'),
+              const SizedBox(height: 8),
               GestureDetector(
                 onTap: _pickDate,
                 child: AbsorbPointer(
                   child: _styledField(
                     controller: _bday,
-                    icon: Icons.cake_outlined,
+                    icon: Icons.date_range,
                     hint: 'Select your birthday',
                   ),
                 ),
               ),
-
-              const SizedBox(height: 36),
+              const SizedBox(height: 28),
 
               // Save button
               SizedBox(
                 width: double.infinity,
-                height: 54,
+                height: 52,
                 child: _saving
                     ? const Center(
-                  child: CircularProgressIndicator(color: kPinkDark),
-                )
+                    child: CircularProgressIndicator(color: kPinkDark))
                     : ElevatedButton.icon(
                   onPressed: _save,
                   icon: const Icon(Icons.check_rounded, size: 20),
                   label: const Text(
                     'Save Changes',
                     style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
+                        fontSize: 16, fontWeight: FontWeight.w700),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: kPinkDark,
@@ -365,13 +365,12 @@
                   ),
                 ),
               ),
-
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
 
               // Cancel button
               SizedBox(
                 width: double.infinity,
-                height: 48,
+                height: 46,
                 child: TextButton(
                   onPressed: () => Navigator.pop(context),
                   style: TextButton.styleFrom(
@@ -382,7 +381,8 @@
                   ),
                   child: const Text(
                     'Cancel',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                    style:
+                    TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -458,7 +458,7 @@
             border: InputBorder.none,
             contentPadding: EdgeInsets.symmetric(
               horizontal: 16,
-              vertical: maxLines > 1 ? 16 : 0,
+              vertical: maxLines > 1 ? 16 : 14,
             ),
           ),
         ),
